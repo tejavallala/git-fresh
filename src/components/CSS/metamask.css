@@ -1,0 +1,14 @@
+.metamask-button {
+    background: linear-gradient(to right, #f6851b, #e2761b);
+    color: white;
+    transition: all 0.3s ease;
+  }
+  
+  .metamask-button:hover {
+    background: linear-gradient(to right, #e2761b, #f6851b);
+    transform: translateY(-2px);
+  }
+  
+  .metamask-icon {
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+  }

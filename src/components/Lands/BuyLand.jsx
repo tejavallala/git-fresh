@@ -42,11 +42,11 @@ function BuyLand() {
   const getStatusBadge = (status) => {
     switch (status) {
       case 'approved':
-        return <span className="badge bg-success rounded-pill shadow-sm"><FaCheckCircle className="me-1" /> Verified</span>;
+        return <span className="badge bg-success rounded-pill"><FaCheckCircle className="me-1" /> Verified</span>;
       case 'rejected':
-        return <span className="badge bg-danger rounded-pill shadow-sm"><FaTimesCircle className="me-1" /> Rejected</span>;
+        return <span className="badge bg-danger rounded-pill"><FaTimesCircle className="me-1" /> Rejected</span>;
       default:
-        return <span className="badge bg-warning rounded-pill shadow-sm"><FaClock className="me-1" /> Pending Verification</span>;
+        return <span className="badge bg-warning rounded-pill"><FaClock className="me-1" /> Pending Verification</span>;
     }
   };
 
@@ -57,32 +57,15 @@ function BuyLand() {
   });
 
   if (isLoading) return <div className="text-center mt-5"><div className="spinner-border text-primary" /></div>;
-  if (error) return <div className="alert alert-danger m-3 shadow-sm">{error}</div>;
+  if (error) return <div className="alert alert-danger m-3">{error}</div>;
 
   return (
     <div className="container mt-5">
-      {/* Inline CSS for text gradient */}
-      <style>
-        {`
-          .text-gradient {
-            background: linear-gradient(90deg, #007bff, #00ff88);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-          }
-          .hover-scale {
-            transition: transform 0.2s ease-in-out;
-          }
-          .hover-scale:hover {
-            transform: scale(1.02);
-          }
-        `}
-      </style>
-
-      <div className="d-flex justify-content-between align-items-center mb-5">
-        <h2 className="mb-0 display-5 fw-bold text-gradient">Available Lands</h2>
+      <div className="d-flex justify-content-between align-items-center mb-4">
+        <h2 className="mb-0 text-primary">Available Lands</h2>
         <div className="btn-group shadow-sm">
           <button 
-            className={`btn ${filter === 'all' ? 'btn-primary' : 'btn-outline-primary'} rounded-start-pill`}
+            className={`btn ${filter === 'all' ? 'btn-primary' : 'btn-outline-primary'} rounded-start`}
             onClick={() => setFilter('all')}
           >
             All Lands
@@ -94,7 +77,7 @@ function BuyLand() {
             Verified Only
           </button>
           <button 
-            className={`btn ${filter === 'unverified' ? 'btn-primary' : 'btn-outline-primary'} rounded-end-pill`}
+            className={`btn ${filter === 'unverified' ? 'btn-primary' : 'btn-outline-primary'} rounded-end`}
             onClick={() => setFilter('unverified')}
           >
             Unverified Only
@@ -103,47 +86,44 @@ function BuyLand() {
       </div>
 
       {filteredLands.length === 0 ? (
-        <div className="alert alert-info shadow-sm text-center py-4">
-          <h5 className="mb-0">No lands found matching the selected filter.</h5>
-        </div>
+        <div className="alert alert-info shadow-sm">No lands found matching the selected filter.</div>
       ) : (
         <div className="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
           {filteredLands.map((land) => (
             <div key={land._id} className="col">
-              <div className="card h-100 shadow-sm border-0 hover-scale" style={{ transition: 'transform 0.2s ease-in-out' }}>
+              <div className="card h-100 shadow-sm hover-shadow-lg transition-all">
                 {land.landImages && land.landImages[0] && (
                   <img
                     src={`data:${land.landImages[0].contentType};base64,${land.landImages[0].data}`}
-                    className="card-img-top img-fluid rounded-top"
+                    className="card-img-top img-fluid"
                     alt="Land"
                     style={{ height: "200px", objectFit: "cover" }}
                   />
                 )}
                 <div className="card-body d-flex flex-column">
-                  <div className="d-flex justify-content-between align-items-start mb-3">
-                    <h5 className="card-title mb-0 text-gradient">{land.location}</h5>
+                  <div className="d-flex justify-content-between align-items-start mb-2">
+                    <h5 className="card-title mb-0 text-primary">{land.location}</h5>
                     {getStatusBadge(land.verificationStatus)}
                   </div>
 
-                  <div className="mb-4">
-                    <p className="mb-2"><strong>Survey Number:</strong> {land.surveyNumber}</p>
-                    <p className="mb-2"><strong>Area:</strong> {land.area} sq ft</p>
-                    <p className="mb-2"><strong>Price:</strong> ₹{land.price.toLocaleString('en-IN')}</p>
-                    <p className="mb-0"><strong>Owner:</strong> {land.name}</p>
+                  <div className="mb-3">
+                    <p className="mb-1"><strong>Survey Number:</strong> {land.surveyNumber}</p>
+                    <p className="mb-1"><strong>Area:</strong> {land.area} sq ft</p>
+                    <p className="mb-1"><strong>Price:</strong> ₹{land.price.toLocaleString('en-IN')}</p>
+                    <p className="mb-1"><strong>Owner:</strong> {land.name}</p>
                   </div>
 
                   <div className="mt-auto">
                     {land.verificationStatus === 'approved' ? (
                       <button
-                        className="btn btn-primary w-100 d-flex align-items-center justify-content-center py-2 fw-bold hover-scale"
+                        className="btn btn-primary w-100 d-flex align-items-center justify-content-center"
                         onClick={() => handleBuyRequest(land._id)}
-                        style={{ transition: 'transform 0.2s ease-in-out' }}
                       >
                         <FaShoppingCart className="me-2" />
                         Send Buy Request
                       </button>
                     ) : (
-                      <div className="alert alert-warning mb-0 shadow-sm">
+                      <div className="alert alert-warning mb-0">
                         <small>
                           <FaTimesCircle className="me-1" />
                           This land needs to be verified before purchase

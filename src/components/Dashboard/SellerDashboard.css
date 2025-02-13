@@ -1,0 +1,57 @@
+.verification-badge {
+  padding: 0.5rem 1rem;
+  border-radius: 50px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+}
+
+.verification-badge.verified {
+  background-color: rgba(25, 135, 84, 0.1);
+  color: #198754;
+}
+
+.verification-badge.unverified {
+  background-color: rgba(220, 53, 69, 0.1);
+  color: #dc3545;
+}
+
+.card {
+  transition: transform 0.2s, box-shadow 0.2s;
+  border: none;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+.card.disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.card-icon {
+  padding: 1rem;
+  border-radius: 50%;
+  background-color: rgba(13, 110, 253, 0.1);
+}
+
+.nav-link[style*="not-allowed"] {
+  opacity: 0.6;
+}
+
+.alert {
+  border-left: 4px solid #ffc107;
+}.icon-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 50px; /* Adjust as needed */
+}
+
+.card-icon {
+  font-size: 40px; /* Ensure visibility */
+}

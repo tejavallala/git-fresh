@@ -7,15 +7,21 @@ const BuyerProfile = () => {
   const [userData, setUserData] = useState(null);
   const [error, setError] = useState(null);
   const [showImage, setShowImage] = useState(false); // State to toggle image visibility
+  const [walletAddress, setWalletAddress] = useState(null);
+  const [verified, setVerified] = useState(false);
 
   useEffect(() => {
     const fetchUserData = async () => {
       try {
         console.log("Fetching data for userId:", userId); // Debug userId
-        const response = await axios.get(`http://localhost:4000/buyerRouter/get-user/${userId}`);
+        const response = await axios.get(
+          `http://localhost:4000/buyerRouter/get-user/${userId}`
+        );
         console.log("API Response:", response.data); // Debug response
         if (response.data) {
           setUserData(response.data);
+          setVerified(response.data.verified || false);
+          setWalletAddress(response.data.walletAddress || null);
         } else {
           setError("No user data found.");
         }
@@ -29,6 +35,8 @@ const BuyerProfile = () => {
       fetchUserData();
     }
   }, [userId]);
+
+  
 
   if (error) {
     return <p style={{ color: "red" }}>{error}</p>;
@@ -49,32 +57,51 @@ const BuyerProfile = () => {
             {/* Left Column */}
             <div className="col-md-6">
               <div className="mb-4">
-                <label className="form-label"><strong>Name:</strong></label>
+                <label className="form-label">
+                  <strong>Name:</strong>
+                </label>
                 <p className="form-control-static">{userData.name}</p>
               </div>
               <div className="mb-4">
-                <label className="form-label"><strong>Email:</strong></label>
+                <label className="form-label">
+                  <strong>Email:</strong>
+                </label>
                 <p className="form-control-static">{userData.email}</p>
               </div>
               <div className="mb-4">
-                <label className="form-label"><strong>Address:</strong></label>
-                <p className="form-control-static">{userData.location || "Address not available"}</p>
+                <label className="form-label">
+                  <strong>Address:</strong>
+                </label>
+                <p className="form-control-static">
+                  {userData.location || "Address not available"}
+                </p>
               </div>
             </div>
 
             {/* Right Column */}
             <div className="col-md-6">
               <div className="mb-4">
-                <label className="form-label"><strong>Phone Number:</strong></label>
-                <p className="form-control-static">{userData.phoneNumber || "Not provided"}</p>
+                <label className="form-label">
+                  <strong>Phone Number:</strong>
+                </label>
+                <p className="form-control-static">
+                  {userData.phoneNumber || "Not provided"}
+                </p>
               </div>
               <div className="mb-4">
-                <label className="form-label"><strong>Government ID:</strong></label>
-                <p className="form-control-static">{userData.governmentId || "Not provided"}</p>
+                <label className="form-label">
+                  <strong>Government ID:</strong>
+                </label>
+                <p className="form-control-static">
+                  {userData.governmentId || "Not provided"}
+                </p>
               </div>
               <div className="mb-4">
-                <label className="form-label"><strong>Government ID Image:</strong></label>
-                {userData.governmentIdImage && userData.governmentIdImage.data ? (
+                <label className="form-label">
+                  <strong>Government ID Image:</strong>
+                </label>
+                {userData.governmentIdImage &&
+                userData.governmentIdImage.data ? (
                   <div
                     className="image-container"
                     style={{
@@ -101,7 +128,10 @@ const BuyerProfile = () => {
                         }}
                       />
                     ) : (
-                      <p className="mb-0" style={{ color: "#007bff", fontWeight: "500" }}>
+                      <p
+                        className="mb-0"
+                        style={{ color: "#007bff", fontWeight: "500" }}
+                      >
                         Click to view Government ID Image
                       </p>
                     )}
@@ -112,6 +142,7 @@ const BuyerProfile = () => {
               </div>
             </div>
           </div>
+          <hr />
         </div>
       </div>
     </div>

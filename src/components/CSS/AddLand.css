@@ -1,0 +1,46 @@
+.z-1000 {
+  z-index: 1000;
+}
+
+.cursor-pointer {
+  cursor: pointer;
+}
+
+.hover-bg-light:hover {
+  background-color: #f8f9fa;
+  transition: background-color 0.2s ease;
+}
+
+.card {
+  border: none;
+  border-radius: 10px;
+}
+
+.form-control:focus {
+  border-color: #0d6efd;
+  box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+}
+
+.btn-primary {
+  transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.city-suggestions {
+  max-height: 200px;
+  overflow-y: auto;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.city-suggestion-item {
+  padding: 8px 12px;
+  border-bottom: 1px solid #eee;
+}
+
+.city-suggestion-item:last-child {
+  border-bottom: none;
+}

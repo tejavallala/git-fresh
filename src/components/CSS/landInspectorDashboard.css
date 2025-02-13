@@ -1,0 +1,35 @@
+.navbar-nav .nav-link {
+    display: flex;
+    align-items: center;
+    color: rgba(255, 255, 255, 0.8);
+    padding: 0.5rem 1rem;
+    transition: color 0.3s ease;
+    cursor: pointer;
+  }
+  
+  .navbar-nav .nav-link:hover {
+    color: white;
+  }
+  
+  .btn-link {
+    border: none;
+    background: none;
+    cursor: pointer;
+  }
+  
+  .btn-link:hover {
+    color: #dc3545;
+  }
+
+  .tooltip {
+    font-size: 0.875rem;
+  }
+  
+  .tooltip-inner {
+    background-color: #343a40;
+    padding: 8px 12px;
+  }
+  
+  .tooltip.bs-tooltip-bottom .tooltip-arrow::before {
+    border-bottom-color: #343a40;
+  }
