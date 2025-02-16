@@ -1,164 +1,257 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import { FaCheckCircle, FaTimesCircle, FaClock, FaShoppingCart, FaFilter } from 'react-icons/fa';
+import React, { useState, useEffect } from "react";
+import { Link, useParams, useLocation } from "react-router-dom";
+import {
+  FaSignOutAlt,
+  FaLandmark,
+  FaHistory,
+  FaUser,
+  FaExclamationCircle,
+  FaCheckCircle,
+  FaLock,
+  FaCreditCard, // Add this import
+} from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import "./SellerDashboard";
 
-function BuyLand() {
-  const [lands, setLands] = useState([]);
-  const [filter, setFilter] = useState('all'); // 'all', 'verified', 'unverified'
+function BuyerDashboard() {
+  const navigate = useNavigate();
+  const { userId } = useParams();
+  const location = useLocation();
+  const [verificationStatus, setVerificationStatus] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [buyerData, setBuyerData] = useState(null);
+  const [pendingPayments, setPendingPayments] = useState([]);
+  const [refreshKey, setRefreshKey] = useState(0); // Add this state for tracking refresh
 
   useEffect(() => {
-    fetchAllLands();
-  }, []);
+    fetchBuyerData();
+    fetchPendingPayments();
+  }, [userId, location.key, refreshKey]); // Update useEffect to include refreshKey
 
-  const fetchAllLands = async () => {
+  const fetchBuyerData = async () => {
     try {
-      const response = await axios.get('http://localhost:4000/landRoute/available-lands');
-      const availableLands = response.data.filter(land => land.verificationStatus !== 'rejected');
-      setLands(availableLands);
+      const response = await axios.get(
+        `http://localhost:4000/buyerRouter/get-user/${userId}`
+      );
+      setBuyerData(response.data);
+      setVerificationStatus(response.data.isVerified || false);
       setIsLoading(false);
     } catch (error) {
-      console.error('Error fetching lands:', error);
-      setError('Failed to fetch lands');
+      console.error("Error fetching buyer data:", error);
       setIsLoading(false);
     }
   };
 
-  const handleBuyRequest = async (landId) => {
+  // Update the fetchPendingPayments function
+  const fetchPendingPayments = async () => {
     try {
-      const buyerId = sessionStorage.getItem('userId');
-      const response = await axios.post(`http://localhost:4000/landRoute/buy-request/${landId}`, {
-        buyerId,
-        requestDate: new Date()
-      });
-      alert('Buy request sent successfully!');
+      const response = await axios.get(
+        `http://localhost:4000/landRoute/pending-payments/${userId}`
+      );
+      // Show all pending payments without filtering
+      setPendingPayments(response.data);
+      console.log('Pending payments:', response.data); // Debug log
     } catch (error) {
-      console.error('Error sending buy request:', error);
-      alert('Failed to send buy request');
+      console.error("Error fetching pending payments:", error);
     }
   };
 
-  const getStatusBadge = (status) => {
-    switch (status) {
-      case 'approved':
-        return <span className="badge bg-success rounded-pill shadow-sm"><FaCheckCircle className="me-1" /> Verified</span>;
-      case 'rejected':
-        return <span className="badge bg-danger rounded-pill shadow-sm"><FaTimesCircle className="me-1" /> Rejected</span>;
-      default:
-        return <span className="badge bg-warning rounded-pill shadow-sm"><FaClock className="me-1" /> Pending Verification</span>;
-    }
+  const handleLogout = () => {
+    sessionStorage.removeItem("userId");
+    navigate("/");
   };
 
-  const filteredLands = lands.filter(land => {
-    if (filter === 'verified') return land.verificationStatus === 'approved';
-    if (filter === 'unverified') return land.verificationStatus === 'pending';
-    return true; // 'all'
-  });
+  const refreshDashboard = () => {
+    setRefreshKey(prevKey => prevKey + 1);
+  };
 
-  if (isLoading) return <div className="text-center mt-5"><div className="spinner-border text-primary" /></div>;
-  if (error) return <div className="alert alert-danger m-3 shadow-sm">{error}</div>;
-
-  return (
-    <div className="container mt-5">
-      {/* Inline CSS for text gradient */}
-      <style>
-        {`
-          .text-gradient {
-            background: linear-gradient(90deg, #007bff, #00ff88);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-          }
-          .hover-scale {
-            transition: transform 0.2s ease-in-out;
-          }
-          .hover-scale:hover {
-            transform: scale(1.02);
-          }
-        `}
-      </style>
-
-      <div className="d-flex justify-content-between align-items-center mb-5">
-        <h2 className="mb-0 display-5 fw-bold text-gradient">Available Lands</h2>
-        <div className="btn-group shadow-sm">
-          <button 
-            className={`btn ${filter === 'all' ? 'btn-primary' : 'btn-outline-primary'} rounded-start-pill`}
-            onClick={() => setFilter('all')}
-          >
-            All Lands
-          </button>
-          <button 
-            className={`btn ${filter === 'verified' ? 'btn-primary' : 'btn-outline-primary'} rounded-0`}
-            onClick={() => setFilter('verified')}
-          >
-            Verified Only
-          </button>
-          <button 
-            className={`btn ${filter === 'unverified' ? 'btn-primary' : 'btn-outline-primary'} rounded-end-pill`}
-            onClick={() => setFilter('unverified')}
-          >
-            Unverified Only
-          </button>
-        </div>
-      </div>
-
-      {filteredLands.length === 0 ? (
-        <div className="alert alert-info shadow-sm text-center py-4">
-          <h5 className="mb-0">No lands found matching the selected filter.</h5>
-        </div>
+  const VerificationBadge = () => (
+    <div
+      className={`verification-badge ${
+        verificationStatus ? "verified" : "unverified"
+      }`}
+    >
+      {verificationStatus ? (
+        <>
+          <FaCheckCircle className="me-2" />
+          <span>Verified Buyer</span>
+        </>
       ) : (
-        <div className="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
-          {filteredLands.map((land) => (
-            <div key={land._id} className="col">
-              <div className="card h-100 shadow-sm border-0 hover-scale" style={{ transition: 'transform 0.2s ease-in-out' }}>
-                {land.landImages && land.landImages[0] && (
-                  <img
-                    src={`data:${land.landImages[0].contentType};base64,${land.landImages[0].data}`}
-                    className="card-img-top img-fluid rounded-top"
-                    alt="Land"
-                    style={{ height: "200px", objectFit: "cover" }}
-                  />
-                )}
-                <div className="card-body d-flex flex-column">
-                  <div className="d-flex justify-content-between align-items-start mb-3">
-                    <h5 className="card-title mb-0 text-gradient">{land.location}</h5>
-                    {getStatusBadge(land.verificationStatus)}
-                  </div>
-
-                  <div className="mb-4">
-                    <p className="mb-2"><strong>Survey Number:</strong> {land.surveyNumber}</p>
-                    <p className="mb-2"><strong>Area:</strong> {land.area} sq ft</p>
-                    <p className="mb-2"><strong>Price:</strong> ₹{land.price.toLocaleString('en-IN')}</p>
-                    <p className="mb-0"><strong>Owner:</strong> {land.name}</p>
-                  </div>
-
-                  <div className="mt-auto">
-                    {land.verificationStatus === 'approved' ? (
-                      <button
-                        className="btn btn-primary w-100 d-flex align-items-center justify-content-center py-2 fw-bold hover-scale"
-                        onClick={() => handleBuyRequest(land._id)}
-                        style={{ transition: 'transform 0.2s ease-in-out' }}
-                      >
-                        <FaShoppingCart className="me-2" />
-                        Send Buy Request
-                      </button>
-                    ) : (
-                      <div className="alert alert-warning mb-0 shadow-sm">
-                        <small>
-                          <FaTimesCircle className="me-1" />
-                          This land needs to be verified before purchase
-                        </small>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
+        <>
+          <FaExclamationCircle className="me-2" />
+          <span>Pending Verification</span>
+        </>
       )}
     </div>
   );
+
+  if (isLoading) {
+    return (
+      <div className="d-flex justify-content-center align-items-center vh-100">
+        <div className="spinner-border text-primary" role="status">
+          <span className="visually-hidden">Loading...</span>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <>
+      <nav className="navbar navbar-expand-lg navbar-light bg-warning">
+        <div className="container">
+          <h3>Welcome {buyerData?.name}</h3>
+          <button
+            className="navbar-toggler"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#navbarNav"
+            aria-controls="navbarNav"
+            aria-expanded="false"
+            aria-label="Toggle navigation"
+          >
+            <span className="navbar-toggler-icon"></span>
+          </button>
+          <div
+            className="collapse navbar-collapse justify-content-end"
+            id="navbarNav"
+          >
+            <ul className="navbar-nav align-items-center">
+              <li className="nav-item me-3">
+                <VerificationBadge />
+              </li>
+              <li className="nav-item">
+                {verificationStatus ? (
+                  <Link className="nav-link" to="/buy-land">
+                    <FaLandmark className="me-1" /> Buy Land
+                  </Link>
+                ) : (
+                  <span
+                    className="nav-link text-muted"
+                    style={{ cursor: "not-allowed" }}
+                  >
+                    <FaLock className="me-1" /> Buy Land
+                  </span>
+                )}
+              </li>
+              <li className="nav-item">
+                <Link className="nav-link" to="/transaction-history">
+                  <FaHistory className="me-1" /> Transaction History
+                </Link>
+              </li>
+              <li className="nav-item">
+                {pendingPayments.length > 0 && (
+                  <Link 
+                    className="nav-link" 
+                    to={`/land-payment/${pendingPayments[0]._id}`}
+                  >
+                    <FaCreditCard className="me-1" /> 
+                    Pending Payment
+                    <span className="badge bg-danger ms-2">
+                      {pendingPayments.length}
+                    </span>
+                  </Link>
+                )}
+              </li>
+              <li className="nav-item">
+                <Link className="nav-link" to={`/profile/${userId}`}>
+                  <FaUser className="me-1" /> Profile
+                </Link>
+              </li>
+              <li className="nav-item">
+                <button
+                  className="nav-link border-0 bg-transparent"
+                  onClick={handleLogout}
+                >
+                  <FaSignOutAlt className="me-1" /> Logout
+                </button>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </nav>
+
+      <div className="container mt-5">
+        {!verificationStatus && (
+          <div className="alert alert-warning mb-4" role="alert">
+            <FaExclamationCircle className="me-2" />
+            <strong>Account Pending Verification:</strong> Your account is
+            currently under review. Some features are restricted until a land
+            inspector verifies your account.
+          </div>
+        )}
+
+        <h1 className="text-center mb-5">Buyer Dashboard</h1>
+
+        <div className="row justify-content-center g-4">
+          <div className="col-md-6 col-lg-3">
+            <div
+              className={`card h-100 ${!verificationStatus ? "disabled" : ""}`}
+            >
+              <div className="card-body text-center">
+                <FaLandmark className="card-icon mb-3 text-primary" size={24} />
+                <h5 className="card-title">Buy Land</h5>
+                <p className="card-text">
+                  Explore and purchase available properties.
+                </p>
+                {!verificationStatus && (
+                  <div className="text-danger mt-2">
+                    <FaLock className="me-1" />
+                    Requires verification
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+
+          <div className="col-md-6 col-lg-3">
+            <div className="card h-100">
+              <div className="card-body text-center">
+                <FaHistory className="card-icon mb-3 text-primary" size={24} />
+                <h5 className="card-title">Transaction History</h5>
+                <p className="card-text">View your past land purchases.</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="col-md-6 col-lg-3">
+            <div className="card h-100">
+              <div className="card-body text-center">
+                <FaUser className="card-icon mb-3 text-primary" size={24} />
+                <h5 className="card-title">Profile Settings</h5>
+                <p className="card-text">Manage your account information.</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="col-md-6 col-lg-3">
+            <div className="card h-100">
+              <div className="card-body text-center">
+                <FaCreditCard className="card-icon mb-3 text-primary" size={24} />
+                <h5 className="card-title">Pending Payments</h5>
+                <p className="card-text">
+                  Complete payments for approved land requests.
+                </p>
+                <div className="d-flex justify-content-between align-items-center">
+                  {pendingPayments.length > 0 && (
+                    <span className="badge bg-danger">
+                      {pendingPayments.length} pending
+                    </span>
+                  )}
+                  <button 
+                    className="btn btn-sm btn-outline-primary"
+                    onClick={refreshDashboard}
+                  >
+                    Refresh
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </>
+  );
 }
 
-export default BuyLand;
+export default BuyerDashboard;

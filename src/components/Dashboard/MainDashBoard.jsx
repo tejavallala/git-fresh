@@ -2,7 +2,7 @@ import axios from "axios";
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
-import '../CSS/metamask.css';
+import "../CSS/metamask.css";
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -28,7 +28,7 @@ const Dashboard = () => {
 
   useEffect(() => {
     // Clear admin session when visiting the main dashboard
-    sessionStorage.removeItem('adminAddress');
+    sessionStorage.removeItem("adminAddress");
   }, []);
 
   const handleInitialRoleSelect = (role) => {
@@ -64,8 +64,6 @@ const Dashboard = () => {
       governmentIdImage: e.target.files[0],
     }));
   };
-
-  
 
   const handleAdminMetaMaskLogin = async () => {
     try {
@@ -118,7 +116,7 @@ const Dashboard = () => {
       alert(response.data.message);
 
       const userId = response.data.userId;
-      const email=response.data.email; // Add this line
+      const email = response.data.email; // Add this line
 
       sessionStorage.setItem("userId", userId);
       sessionStorage.setItem("userEmail", email); // Add this line
@@ -128,8 +126,8 @@ const Dashboard = () => {
         navigate(`/seller-dashboard/${userId}`);
       } else if (loginRole === "buyer") {
         navigate(`/buyer-dashboard/${userId}`); // Removed space here
-      }else if(loginRole==="admin"){
-        navigate("/admin-dashboard")
+      } else if (loginRole === "admin") {
+        navigate("/admin-dashboard");
       }
     } catch (error) {
       if (error.response && error.response.data.message) {
@@ -156,7 +154,7 @@ const Dashboard = () => {
           : formData.userType === "admin"
           ? "http://localhost:4000/adminRoute/create-user"
           : null;
-          
+
       if (!endpoint) {
         throw new Error("Invalid user type selected");
       }
@@ -184,8 +182,6 @@ const Dashboard = () => {
     }
   };
 
-  
-
   const renderLoginForm = () => {
     if (loginRole === "admin") {
       return (
@@ -196,8 +192,8 @@ const Dashboard = () => {
             className="btn btn-primary w-100 d-flex align-items-center justify-content-center gap-2"
             onClick={handleAdminMetaMaskLogin}
           >
-            <img 
-              src="https://upload.wikimedia.org/wikipedia/commons/3/36/MetaMask_Fox.svg" 
+            <img
+              src="https://upload.wikimedia.org/wikipedia/commons/3/36/MetaMask_Fox.svg"
               alt="MetaMask"
               style={{ width: "24px", height: "24px" }}
             />

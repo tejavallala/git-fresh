@@ -14,6 +14,9 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import YourLands from "./components/Lands/YourLands";
 import VerifyLand from "./components/Verifications/VerifyLand";
 import BuyLand from "./components/Lands/BuyLand";
+import VerifyPurchases from "./components/Verifications/VerifyPurchases";
+import LandPayment from "./components/Payment/LandPayment";
+import BuyerTransaction from "./components/Transactions/BuyerTransactionHistory";
 
 const App = () => {
   return (
@@ -26,7 +29,10 @@ const App = () => {
             element={<SellerDashboard />}
           />
           <Route path="/buyer-dashboard/:userId" element={<BuyerDashboard />} />
-          <Route path="/transaction-history" element={<Transaction />} />
+          <Route
+            path="/transaction-history/:requestId"
+            element={<Transaction />}
+          />
           <Route path="/profile/:userId" element={<BuyerProfile />} />
           <Route path="/sell-land" element={<AddLand />} />
           <Route path="/buy-land" element={<BuyLand />} />
@@ -53,6 +59,16 @@ const App = () => {
               </ProtectedRoute>
             }
           />
+          <Route
+            path="/verify-purchases"
+            element={
+              <ProtectedRoute>
+                <VerifyPurchases />
+              </ProtectedRoute>
+            }
+          />
+          <Route path="/land-payment/:requestId" element={<LandPayment />} />
+          <Route path="transaction-history" element={<BuyerTransaction />} />
         </Routes>
       </div>
     </Router>

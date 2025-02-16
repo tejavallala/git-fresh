@@ -63,6 +63,11 @@ const LandInspectorDashboard = () => {
                   Verify User
                 </Link>
               </li>
+              <li className="nav-item">
+                <Link className="nav-link px-3" to="/verify-purchases">
+                  Verify Purchases
+                </Link>
+              </li>
             </ul>
 
             <ul className="navbar-nav align-items-center">
