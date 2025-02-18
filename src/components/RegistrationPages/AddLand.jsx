@@ -78,7 +78,7 @@ const AddLand = () => {
       );
 
       alert("Land details submitted successfully!");
-      navigate("/seller-dashboard");
+      navigate(`/seller-dashboard/${userId}`);
     } catch (error) {
       console.error("Error submitting land details:", error);
       alert("Failed to submit land details: " + error.message);

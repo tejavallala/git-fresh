@@ -1,0 +1,73 @@
+.badge {
+  padding: 8px 12px;
+  font-size: 0.85rem;
+  transition: all 0.3s ease;
+}
+
+.badge.bg-success {
+  background-color: #28a745 !important;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+.badge.bg-info {
+  background-color: #17a2b8 !important;
+}
+
+.badge.bg-danger {
+  background-color: #dc3545 !important;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+.badge.bg-warning {
+  background-color: #ffc107 !important;
+  color: #000 !important;
+}
+
+.badge i {
+  margin-right: 4px;
+}
+
+.status-transition {
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.btn-primary {
+  transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.spin {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.btn-outline-primary {
+  transition: all 0.3s ease;
+}
+
+.btn-outline-primary:hover:not(.disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.btn-outline-primary.disabled {
+  cursor: not-allowed;
+  opacity: 0.7;
+}

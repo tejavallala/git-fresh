@@ -9,6 +9,7 @@ import {
   FaCheckCircle,
   FaLock,
   FaCreditCard, // Add this import
+  FaHome, // Add this new import
 } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -134,6 +135,12 @@ function BuyerDashboard() {
                   </span>
                 )}
               </li>
+              {/* Add this new nav item */}
+              <li className="nav-item">
+                <Link className="nav-link" to={`/owned-lands/${userId}`}>
+                  <FaHome className="me-1" /> Your Lands
+                </Link>
+              </li>
               <li className="nav-item">
                 <Link className="nav-link" to="/transaction-history">
                   <FaHistory className="me-1" /> Transaction History
@@ -247,6 +254,19 @@ function BuyerDashboard() {
                 </div>
               </div>
             </div>
+          </div>
+
+          {/* Add this inside the row of cards */}
+          <div className="col-md-6 col-lg-3">
+            <Link to={`/owned-lands/${userId}`} className="text-decoration-none">
+              <div className="card h-100">
+                <div className="card-body text-center">
+                  <FaHome className="card-icon mb-3 text-primary" size={24} />
+                  <h5 className="card-title">Your Lands</h5>
+                  <p className="card-text">View your owned properties and their details.</p>
+                </div>
+              </div>
+            </Link>
           </div>
         </div>
       </div>

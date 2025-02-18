@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
-import { FaCheckCircle, FaTimesCircle, FaClock } from 'react-icons/fa';
+import { FaCheckCircle, FaTimesCircle, FaClock, FaExchangeAlt } from 'react-icons/fa';
+import '../CSS/YourLands.css';
 
 const YourLands = () => {
   const { userId } = useParams();
@@ -16,10 +17,11 @@ const YourLands = () => {
   const fetchUserLands = async () => {
     try {
       const response = await axios.get(`http://localhost:4000/landRoute/user-lands/${userId}`);
+      console.log('Fetched lands:', response.data); // Debug log
       setLands(response.data);
       setIsLoading(false);
     } catch (error) {
-      console.error('Error fetching lands:', error);
+      console.error('Error fetching lands:', error.response?.data || error.message);
       setError('Failed to fetch your lands');
       setIsLoading(false);
     }
@@ -46,6 +48,20 @@ const YourLands = () => {
           </span>
         );
     }
+  };
+
+  const getOwnershipStatus = (land) => {
+    if (land.status === 'transferred') {
+      return (
+        <div className="alert alert-success p-2 mb-2">
+          <FaExchangeAlt className="me-2" />
+          <small>
+            Ownership transferred to <strong>{land.currentOwner.name}</strong>
+          </small>
+        </div>
+      );
+    }
+    return null;
   };
 
   if (isLoading) {
@@ -79,28 +95,50 @@ const YourLands = () => {
         <div className="row g-4">
           {lands.map((land) => (
             <div key={land._id} className="col-md-6 col-lg-4">
-              <div className="card h-100 shadow-sm">
+              <div className="card h-100 shadow-sm hover-card">
                 {land.landImages && land.landImages[0] && (
-                  <img
-                    src={`data:${land.landImages[0].contentType};base64,${land.landImages[0].data}`}
-                    className="card-img-top"
-                    alt="Land"
-                    style={{ height: '200px', objectFit: 'cover' }}
-                  />
+                  <div className="land-image-container">
+                    <img
+                      src={`data:${land.landImages[0].contentType};base64,${land.landImages[0].data}`}
+                      className="card-img-top"
+                      alt={`Land in ${land.location}`}
+                      onError={(e) => {
+                        e.target.onerror = null;
+                        e.target.src = '/placeholder-land.jpg'; // Add a placeholder image
+                      }}
+                    />
+                  </div>
                 )}
                 <div className="card-body d-flex flex-column">
-                  <div className="d-flex justify-content-between align-items-center mb-2">
-                    <h5 className="card-title mb-0"><strong>Location : </strong>{land.location}</h5>
+                  <div className="d-flex justify-content-between align-items-start mb-2">
+                    <h5 className="card-title">
+                      <strong>Location:</strong> {land.location || 'N/A'}
+                    </h5>
                     {getStatusBadge(land.verificationStatus)}
                   </div>
                   
                   <hr className="my-2" />
 
-                  <div className="mb-3">
-                    <p className="mb-1"><strong>Survey Number:</strong> {land.surveyNumber}</p>
-                    <p className="mb-1"><strong>Area:</strong> {land.area} sq ft</p>
-                    <p className="mb-1"><strong>Price:</strong> ₹{land.price.toLocaleString('en-IN')}</p>
+                  <div className="land-details mb-3">
+                    <p className="mb-1">
+                      <strong>Survey Number:</strong> {land.surveyNumber || 'N/A'}
+                    </p>
+                    <p className="mb-1">
+                      <strong>Area:</strong> {land.area ? `${land.area} sq ft` : 'N/A'}
+                    </p>
+                    <p className="mb-1">
+                      <strong>Price:</strong> {land.price ? `₹${land.price.toLocaleString('en-IN')}` : 'N/A'}
+                    </p>
                   </div>
+
+                  {land.status === 'transferred' && land.currentOwner && (
+                    <div className="alert alert-success p-2 mb-2">
+                      <FaExchangeAlt className="me-2" />
+                      <small>
+                        Ownership transferred to <strong>{land.currentOwner.name}</strong>
+                      </small>
+                    </div>
+                  )}
 
                   {land.verificationComments && (
                     <div className="alert alert-info p-2 mb-2">
@@ -111,11 +149,12 @@ const YourLands = () => {
                     </div>
                   )}
 
-                  <hr className="my-2" />
-
-                  <p className="text-muted mb-0">
-                    <strong>Created On:</strong> {new Date(land.createdAt).toLocaleString('en-IN')}
-                  </p>
+                  <div className="mt-auto">
+                    <hr className="my-2" />
+                    <p className="text-muted mb-0 small">
+                      <strong>Created:</strong> {new Date(land.createdAt).toLocaleString('en-IN')}
+                    </p>
+                  </div>
                 </div>
               </div>
             </div>

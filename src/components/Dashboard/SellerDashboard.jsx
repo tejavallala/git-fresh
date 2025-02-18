@@ -9,6 +9,7 @@ import {
   FaCheckCircle,
   FaLock,
   FaList,
+  FaHome,
 } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -194,6 +195,17 @@ function SellerDashboard() {
               </div>
             </div>
           </div>
+          <div className="col-md-6 col-lg-4">
+                  
+                        <div className="card h-100">
+                          <div className="card-body text-center">
+                            <FaHome className="card-icon mb-3 text-primary" size={24} />
+                            <h5 className="card-title">Your Lands</h5>
+                            <p className="card-text">View your owned properties and their details.</p>
+                          </div>
+                        </div>
+                    
+                    </div>
         </div>
       </div>
     </>

@@ -1,0 +1,49 @@
+.hover-card {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.hover-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 0.5rem 1rem rgba(0,0,0,0.15) !important;
+}
+
+.land-image-container {
+  height: 200px;
+  overflow: hidden;
+  position: relative;
+}
+
+.card-img-top {
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.land-details p {
+  margin-bottom: 0.5rem;
+  font-size: 0.95rem;
+}
+
+.badge {
+  font-size: 0.8rem;
+  padding: 0.5em 0.8em;
+}
+
+.alert {
+  margin-bottom: 1rem;
+}
+
+.alert small {
+  display: block;
+  line-height: 1.4;
+}
+
+@media (max-width: 768px) {
+  .col-md-6 {
+    padding: 0 0.5rem;
+  }
+  
+  .card {
+    margin-bottom: 1rem;
+  }
+}

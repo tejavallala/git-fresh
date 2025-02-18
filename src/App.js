@@ -17,6 +17,9 @@ import BuyLand from "./components/Lands/BuyLand";
 import VerifyPurchases from "./components/Verifications/VerifyPurchases";
 import LandPayment from "./components/Payment/LandPayment";
 import BuyerTransaction from "./components/Transactions/BuyerTransactionHistory";
+import TransferRequests from "./components/LandInspector/TransferRequests";
+import OwnedLands from "./components/Lands/OwnedLands";
+import TransferHistory from './components/LandInspector/TransferHistory';
 
 const App = () => {
   return (
@@ -69,6 +72,16 @@ const App = () => {
           />
           <Route path="/land-payment/:requestId" element={<LandPayment />} />
           <Route path="transaction-history" element={<BuyerTransaction />} />
+          <Route path="/transfer-ownership/" element={<TransferRequests/>} />
+          <Route path="/owned-lands/:userId" element={<OwnedLands/>} />
+          <Route 
+            path="/transfer-history" 
+            element={
+              <ProtectedRoute allowedRole="landInspector">
+                <TransferHistory />
+              </ProtectedRoute>
+            } 
+          />
         </Routes>
       </div>
     </Router>
