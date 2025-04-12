@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import { FaCheckCircle, FaTimesCircle, FaMapMarkerAlt, FaCamera } from 'react-icons/fa';
 import '../CSS/TransferRequests.css';
-import FingerprintCapture from '../Fingerprint/FingerprintCapture';
+
 
 function TransferRequests() {
   const [requests, setRequests] = useState([]);
@@ -11,8 +11,7 @@ function TransferRequests() {
   const [verificationStep, setVerificationStep] = useState('initial'); // initial, seller-photo, buyer-photo, details
   const [sellerPhoto, setSellerPhoto] = useState(null);
   const [buyerPhoto, setBuyerPhoto] = useState(null);
-  const [sellerFingerprint, setSellerFingerprint] = useState(null);
-  const [buyerFingerprint, setBuyerFingerprint] = useState(null);
+  
   const videoRef = useRef(null);
 
   useEffect(() => {
@@ -69,8 +68,6 @@ function TransferRequests() {
         action,
         sellerPhoto,
         buyerPhoto,
-        sellerFingerprint,
-        buyerFingerprint,
         verificationDate: new Date()
       });
       
