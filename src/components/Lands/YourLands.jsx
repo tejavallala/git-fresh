@@ -16,7 +16,7 @@ const YourLands = () => {
 
   const fetchUserLands = async () => {
     try {
-      const response = await axios.get(`http://localhost:4000/landRoute/user-lands/${userId}`);
+      const response = await axios.get(`https://git-back-k93u.onrender.com/landRoute/user-lands/${userId}`);
       console.log('Fetched lands:', response.data); // Debug log
       setLands(response.data);
       setIsLoading(false);

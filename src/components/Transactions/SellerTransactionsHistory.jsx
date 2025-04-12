@@ -19,7 +19,7 @@ function SellerTransaction() {
   const fetchTransactions = async () => {
     try {
       const response = await axios.get(
-        `http://localhost:4000/landRoute/user-transactions/${userId}`
+        `https://git-back-k93u.onrender.com/landRoute/user-transactions/${userId}`
       );
       // Filter for seller transactions only
       const sellerTransactions = response.data.filter(
@@ -35,7 +35,7 @@ function SellerTransaction() {
 
   const fetchTransferStatuses = async () => {
     try {
-      const response = await axios.get(`http://localhost:4000/landRoute/transfer-statuses`);
+      const response = await axios.get(`https://git-back-k93u.onrender.com/landRoute/transfer-statuses`);
       const statusMap = {};
       response.data.forEach(transfer => {
         statusMap[transfer.paymentId] = transfer.status;
@@ -56,7 +56,7 @@ function SellerTransaction() {
         paymentId: transaction._id
       };
 
-      await axios.post('http://localhost:4000/landRoute/request-transfer', transferData);
+      await axios.post('https://git-back-k93u.onrender.com/landRoute/request-transfer', transferData);
       
       setTransferRequests({
         ...transferRequests,

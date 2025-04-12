@@ -48,7 +48,7 @@ const LandInspectorDashboard = () => {
   const fetchPendingCounts = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:4000/landRoute/pending-counts"
+        "https://git-back-k93u.onrender.com/landRoute/pending-counts"
       );
       setCounts(response.data);
     } catch (error) {

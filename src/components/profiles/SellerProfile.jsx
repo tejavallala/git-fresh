@@ -12,7 +12,7 @@ const SellerProfile = () => {
     const fetchUserData = async () => {
       try {
         console.log("Fetching data for userId:", userId); // Debug userId
-        const response = await axios.get(`http://localhost:4000/sellerRouter/get-user/${userId}`);
+        const response = await axios.get(`https://git-back-k93u.onrender.com/sellerRouter/get-user/${userId}`);
         console.log("API Response:", response.data); // Debug response
         if (response.data) {
           setUserData(response.data);

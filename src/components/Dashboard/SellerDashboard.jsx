@@ -29,7 +29,7 @@ function SellerDashboard() {
   const fetchSellerData = async () => {
     try {
       const response = await axios.get(
-        `http://localhost:4000/sellerRouter/get-user/${userId}`
+        `https://git-back-k93u.onrender.com/sellerRouter/get-user/${userId}`
       );
       setSellerData(response.data);
       setVerificationStatus(response.data.isVerified || false);

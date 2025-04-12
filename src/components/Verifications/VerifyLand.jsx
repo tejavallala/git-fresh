@@ -13,7 +13,7 @@ function VerifyLand() {
 
   const fetchPendingLands = async () => {
     try {
-      const response = await axios.get("http://localhost:4000/landRoute/pending-lands");
+      const response = await axios.get("https://git-back-k93u.onrender.com/landRoute/pending-lands");
       setLands(response.data);
       setIsLoading(false);
     } catch (error) {
@@ -25,7 +25,7 @@ function VerifyLand() {
 
   const handleVerification = async (landId, status, comments) => {
     try {
-      await axios.post(`http://localhost:4000/landRoute/verify-land/${landId}`, {
+      await axios.post(`https://git-back-k93u.onrender.com/landRoute/verify-land/${landId}`, {
         status,
         comments,
         inspectorId: sessionStorage.getItem("userId")

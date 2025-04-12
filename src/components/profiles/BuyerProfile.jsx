@@ -15,7 +15,7 @@ const BuyerProfile = () => {
       try {
         console.log("Fetching data for userId:", userId); // Debug userId
         const response = await axios.get(
-          `http://localhost:4000/buyerRouter/get-user/${userId}`
+          `https://git-back-k93u.onrender.com/buyerRouter/get-user/${userId}`
         );
         console.log("API Response:", response.data); // Debug response
         if (response.data) {

@@ -14,7 +14,7 @@ function BuyLand() {
 
   const fetchAllLands = async () => {
     try {
-      const response = await axios.get('http://localhost:4000/landRoute/available-lands');
+      const response = await axios.get('https://git-back-k93u.onrender.com/landRoute/available-lands');
       // Filter out only rejected lands
       const availableLands = response.data.filter(land => 
         land.verificationStatus !== 'rejected'
@@ -32,7 +32,7 @@ function BuyLand() {
   const handleBuyRequest = async (landId) => {
     try {
       const buyerId = sessionStorage.getItem('userId');
-      const response = await axios.post(`http://localhost:4000/landRoute/buy-request/${landId}`, {
+      const response = await axios.post(`https://git-back-k93u.onrender.com/landRoute/buy-request/${landId}`, {
         buyerId,
         requestDate: new Date()
       });

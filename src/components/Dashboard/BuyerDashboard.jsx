@@ -33,7 +33,7 @@ function BuyerDashboard() {
   const fetchBuyerData = async () => {
     try {
       const response = await axios.get(
-        `http://localhost:4000/buyerRouter/get-user/${userId}`
+        `https://git-back-k93u.onrender.com/buyerRouter/get-user/${userId}`
       );
       setBuyerData(response.data);
       setVerificationStatus(response.data.isVerified || false);
@@ -48,7 +48,7 @@ function BuyerDashboard() {
   const fetchPendingPayments = async () => {
     try {
       const response = await axios.get(
-        `http://localhost:4000/landRoute/pending-payments/${userId}`
+        `https://git-back-k93u.onrender.com/landRoute/pending-payments/${userId}`
       );
       // Show all pending payments without filtering
       setPendingPayments(response.data);

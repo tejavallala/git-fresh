@@ -14,7 +14,7 @@ function BuyerTransaction() {
   const fetchTransactions = async () => {
     try {
       const response = await axios.get(
-        `http://localhost:4000/landRoute/user-transactions/${userId}`
+        `https://git-back-k93u.onrender.com/landRoute/user-transactions/${userId}`
       );
       setTransactions(response.data);
       setLoading(false);

@@ -58,7 +58,7 @@ function LandPayment() {
       console.log("Fetching payments for user:", userId);
 
       const response = await axios.get(
-        `http://localhost:4000/landRoute/pending-payments/${userId}`
+        `https://git-back-k93u.onrender.com/landRoute/pending-payments/${userId}`
       );
 
       console.log(
@@ -75,7 +75,7 @@ function LandPayment() {
     try {
       const userId = sessionStorage.getItem("userId");
       const response = await axios.get(
-        `http://localhost:4000/landRoute/user/${userId}`
+        `https://git-back-k93u.onrender.com/landRoute/user/${userId}`
       );
       setBuyerDetails(response.data);
     } catch (error) {
@@ -192,7 +192,7 @@ function LandPayment() {
       console.log("Sending payment data:", paymentData); // Debug log
 
       await axios.post(
-        "http://localhost:4000/landRoute/record-payment",
+        "https://git-back-k93u.onrender.com/landRoute/record-payment",
         paymentData
       );
 

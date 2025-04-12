@@ -17,7 +17,7 @@ const OwnedLands = () => {
 
   const fetchOwnedLands = async () => {
     try {
-      const response = await axios.get(`http://localhost:4000/landRoute/owned-lands/${userId}`);
+      const response = await axios.get(`https://git-back-k93u.onrender.com/landRoute/owned-lands/${userId}`);
       
       // Enhanced debug logging
       console.log('Owned lands response:', JSON.stringify(response.data, null, 2));
