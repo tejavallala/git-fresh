@@ -156,16 +156,7 @@ const LandInspectorDashboard = () => {
                 </Link>
               </li>
             </ul>
-            <li className="nav-item">
-                <Link
-                  className="nav-link px-3 d-flex align-items-center"
-                  to="/mobile-fingerprint"
-                >
-                  <FaLandmark className="me-2" />
-                  mobile fingerprint
-                
-                </Link>
-              </li>
+            
 
             <div className="d-flex align-items-center text-light">
               <div className="me-4 d-flex align-items-center">
