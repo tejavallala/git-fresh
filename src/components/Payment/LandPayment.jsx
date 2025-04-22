@@ -22,6 +22,11 @@ function LandPayment() {
   const [buyerDetails, setBuyerDetails] = useState(null);
   const [showSuccess, setShowSuccess] = useState(false);
   const [transactionHash, setTransactionHash] = useState('');
+  const [paymentOption, setPaymentOption] = useState('');
+  const [successMessage, setSuccessMessage] = useState({
+    title: "",
+    description: ""
+  });
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -58,7 +63,7 @@ function LandPayment() {
       console.log("Fetching payments for user:", userId);
 
       const response = await axios.get(
-        `https://git-back-k93u.onrender.com/landRoute/pending-payments/${userId}`
+        `http://localhost:4000/landRoute/pending-payments/${userId}`
       );
 
       console.log(
@@ -75,7 +80,7 @@ function LandPayment() {
     try {
       const userId = sessionStorage.getItem("userId");
       const response = await axios.get(
-        `https://git-back-k93u.onrender.com/landRoute/user/${userId}`
+        `http://localhost:4000/landRoute/user/${userId}`
       );
       setBuyerDetails(response.data);
     } catch (error) {
@@ -109,7 +114,7 @@ function LandPayment() {
   const handlePayment = async () => {
     try {
       setIsProcessing(true);
-
+      
       const provider = await detectEthereumProvider();
       if (!provider) {
         throw new Error("Please install MetaMask to make payment");
@@ -155,19 +160,21 @@ function LandPayment() {
         );
       }
 
-      // Rest of your payment code...
       const ethersProvider = new ethers.providers.Web3Provider(window.ethereum);
       await window.ethereum.request({ method: "eth_requestAccounts" });
       const signer = ethersProvider.getSigner();
 
-      // Convert INR price to ETH
       const priceInEth = convertInrToEth(selectedPayment.landId.price);
       const priceInWei = ethers.utils.parseEther(priceInEth.toString());
 
-      // Send transaction
+      // Determine recipient address based on payment option
+      const recipientAddress = paymentOption === 'direct' 
+        ? selectedPayment.landId.walletAddress 
+        : "0x37622b2e2714ee440a7672e7d83802196530b2bc"; // Land Inspector's address
+
       const tx = await signer.sendTransaction({
         from: buyerWalletAddress,
-        to: selectedPayment.landId.walletAddress, // Updated to use direct wallet address
+        to: recipientAddress,
         value: priceInWei,
         gasLimit: 21000,
       });
@@ -178,40 +185,59 @@ function LandPayment() {
       const receipt = await tx.wait();
       console.log("Transaction receipt:", receipt);
 
-      // Record payment in backend
+      // Updated payment data to include payment type
       const paymentData = {
         buyRequestId: selectedPayment._id,
         landId: selectedPayment.landId._id,
-        buyerId: sessionStorage.getItem("userId"), // Get buyerId from session
-        sellerId: selectedPayment.landId.userId._id, // Get sellerId from land's userId
+        buyerId: sessionStorage.getItem("userId"),
+        sellerId: selectedPayment.landId.userId._id,
         amount: selectedPayment.landId.price,
         transactionHash: tx.hash,
         network: "sepolia",
+        paymentType: paymentOption, // Add payment type
+        status: paymentOption === 'direct' ? 'completed' : 'inEscrow',
+        escrowDetails: paymentOption === 'escrow' ? {
+          receivedByInspector: {
+            status: true,
+            transactionHash: tx.hash,
+            timestamp: new Date()
+          }
+        } : null
       };
 
-      console.log("Sending payment data:", paymentData); // Debug log
+      console.log("Sending payment data:", paymentData);
 
-      await axios.post(
-        "https://git-back-k93u.onrender.com/landRoute/record-payment",
-        paymentData
-      );
+      // Use different endpoints based on payment type
+      const endpoint = paymentOption === 'direct' 
+        ? "http://localhost:4000/landRoute/record-payment"
+        : "http://localhost:4000/landRoute/record-escrow-payment";
+
+      const response = await axios.post(endpoint, paymentData);
 
       setTransactionHash(tx.hash);
       setShowSuccess(true);
       
+      // Set success message based on payment type
+      if (paymentOption === 'escrow') {
+        setSuccessMessage({
+          title: "Payment in Escrow!",
+          description: "Your payment has been sent to the Land Inspector. The amount will be held in escrow until the property transfer is complete."
+        });
+      } else {
+        setSuccessMessage({
+          title: "Payment Successful!",
+          description: "Your land purchase transaction has been completed successfully."
+        });
+      }
+
+      // Add delay before navigation
       setTimeout(() => {
         const userId = sessionStorage.getItem("userId");
         navigate(`/buyer-dashboard/${userId}`);
-      }, 5000); // Redirect after 5 seconds
+      }, 5000);
 
     } catch (error) {
       console.error("Payment error:", error);
-      console.error("Payment details:", {
-        buyerId: sessionStorage.getItem("userId"),
-        sellerId: selectedPayment?.landId?.userId?._id,
-        landId: selectedPayment?.landId?._id,
-        sellerWallet: selectedPayment?.landId?.userId?.walletAddress,
-      });
       alert("Payment failed: " + error.message);
     } finally {
       setIsProcessing(false);
@@ -235,13 +261,6 @@ function LandPayment() {
     setSelectedPayment(payment);
   };
 
-  if (!isLoading)
-    return (
-      <div className="text-center mt-5">
-        <div className="spinner-border" />
-      </div>
-    );
-
   return (
     <div className="container mt-4">
       {showSuccess ? (
@@ -256,9 +275,9 @@ function LandPayment() {
             <div className="success-icon">
               <FaCheckCircle />
             </div>
-            <h2 className="success-text mb-3">Payment Successful!</h2>
+            <h2 className="success-text mb-3">{successMessage.title}</h2>
             <p className="success-text mb-4">
-              Your land purchase transaction has been completed successfully.
+              {successMessage.description}
             </p>
             <div className="transaction-hash">
               <small>Transaction Hash:</small><br />
@@ -340,45 +359,27 @@ function LandPayment() {
 
                 <div className="row">
                   {/* Land Details Column */}
-                  <div className="col-md-4">
+                  <div className="col-md-6">
                     <h4 className="border-bottom pb-2 mb-3">Land Details</h4>
+                    <p><strong>Location:</strong> {selectedPayment.landId.location}</p>
+                    <p><strong>Survey Number:</strong> {selectedPayment.landId.surveyNumber}</p>
+                    <p><strong>Area:</strong> {selectedPayment.landId.area} sq ft</p>
                     <p>
-                      <strong>Location:</strong> {selectedPayment.landId.location}
-                    </p>
-                    <p>
-                      <strong>Survey Number:</strong>{" "}
-                      {selectedPayment.landId.surveyNumber}
-                    </p>
-                    <p>
-                      <strong>Area:</strong> {selectedPayment.landId.area} sq ft
-                    </p>
-                    <p>
-                      <strong>Price:</strong> ₹
-                      {selectedPayment.landId.price.toLocaleString("en-IN")}{" "}
-                      <span className="text-muted">
-                        ({convertInrToEth(selectedPayment.landId.price)} ETH)
-                      </span>
+                      <strong>Price:</strong> ₹{selectedPayment.landId.price.toLocaleString("en-IN")}{" "}
+                      <span className="text-muted">({convertInrToEth(selectedPayment.landId.price)} ETH)</span>
                     </p>
                   </div>
 
                   {/* Buyer Details Column */}
-                  <div className="col-md-4">
+                  <div className="col-md-6">
                     <h4 className="border-bottom pb-2 mb-3">Buyer Details</h4>
                     {buyerDetails ? (
                       <>
-                        <p>
-                          <strong>Name:</strong> {buyerDetails.name}
-                        </p>
-                        <p>
-                          <strong>Email:</strong> {buyerDetails.email}
-                        </p>
-                        <p>
-                          <strong>Phone:</strong> {buyerDetails.phoneNumber}
-                        </p>
+                        <p><strong>Name:</strong> {buyerDetails.name}</p>
+                        <p><strong>Email:</strong> {buyerDetails.email}</p>
+                        <p><strong>Phone:</strong> {buyerDetails.phoneNumber}</p>
                         <div className="mb-3">
-                          <label className="form-label">
-                            <strong>Wallet Address:</strong>
-                          </label>
+                          <label className="form-label"><strong>Wallet Address:</strong></label>
                           {walletConnected ? (
                             <div className="d-flex align-items-center">
                               <input
@@ -387,9 +388,7 @@ function LandPayment() {
                                 value={buyerWalletAddress}
                                 readOnly
                               />
-                              <span className="badge bg-success ms-2">
-                                Connected
-                              </span>
+                              <span className="badge bg-success ms-2">Connected</span>
                             </div>
                           ) : (
                             <button
@@ -403,79 +402,138 @@ function LandPayment() {
                         </div>
                       </>
                     ) : (
-                      <div className="alert alert-info">
-                        Loading buyer details...
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Seller Details Column */}
-                  <div className="col-md-4">
-                    <h4 className="border-bottom pb-2 mb-3">Seller Details</h4>
-                    {selectedPayment?.landId ? (
-                      <>
-                        <p>
-                          <strong>Name:</strong> {selectedPayment.landId.name}
-                        </p>
-                        <p>
-                          <strong>Email:</strong> {selectedPayment.landId.email}
-                        </p>
-                        <p>
-                          <strong>Phone:</strong>{" "}
-                          {selectedPayment.landId.phoneNumber}
-                        </p>
-                        <div className="mb-3">
-                          <label className="form-label">
-                            <strong>Seller Wallet:</strong>
-                          </label>
-                          <div className="d-flex align-items-center">
-                            <input
-                              type="text"
-                              className="form-control form-control-sm bg-light"
-                              value={
-                                selectedPayment.landId.walletAddress ||
-                                "No wallet address available"
-                              }
-                              readOnly
-                              style={{ backgroundColor: "#e9ecef" }}
-                            />
-                            {selectedPayment.landId.walletAddress && (
-                              <span className="badge bg-info ms-2">Verified</span>
-                            )}
-                          </div>
-                          <small className="text-muted">
-                            Auto-fetched from seller's profile
-                          </small>
-                        </div>
-                      </>
-                    ) : (
-                      <div className="alert alert-warning">
-                        <i className="fas fa-exclamation-triangle me-2"></i>
-                        Seller details not available
-                      </div>
+                      <div className="alert alert-info">Loading buyer details...</div>
                     )}
                   </div>
                 </div>
 
-                {/* Payment Button Section */}
-                <div className="mt-4 text-center">
-                  <button
-                    className={`btn btn-primary btn-lg ${isProcessing ? 'payment-status' : ''} ${walletConnected ? 'glow-effect' : ''}`}
-                    onClick={handlePayment}
-                    disabled={isProcessing || !walletConnected}
-                  >
-                    {isProcessing ? (
-                      <>
-                        <FaSpinner className="spinner me-2" />
-                        <span className="processing-text">Processing Payment...</span>
-                      </>
+                {/* Payment Method Selection */}
+                <div className="mt-4">
+                  <h4 className="border-bottom pb-2 mb-3">Payment Method</h4>
+                  <div className="payment-options">
+                    <div className="form-check mb-3">
+                      <input
+                        type="radio"
+                        className="form-check-input"
+                        id="directPayment"
+                        name="paymentOption"
+                        value="direct"
+                        onChange={(e) => setPaymentOption(e.target.value)}
+                        checked={paymentOption === 'direct'}
+                      />
+                      <label className="form-check-label" htmlFor="directPayment">
+                        Direct Transfer to Seller
+                      </label>
+                    </div>
+                    <div className="form-check mb-3">
+                      <input
+                        type="radio"
+                        className="form-check-input"
+                        id="inspectorPayment"
+                        name="paymentOption"
+                        value="inspector"
+                        onChange={(e) => setPaymentOption(e.target.value)}
+                        checked={paymentOption === 'inspector'}
+                      />
+                      <label className="form-check-label" htmlFor="inspectorPayment">
+                        Transfer through Land Inspector (Escrow)
+                      </label>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Conditional Render of Payment Details */}
+                {paymentOption && (
+                  <div className="mt-4">
+                    {paymentOption === 'direct' ? (
+                      <div className="card border-warning">
+                        <div className="card-body">
+                          <div className="alert alert-warning mb-4">
+                            <strong>⚠️ Caution:</strong> Direct transfer should only be used if you fully trust the seller.
+                            Please verify all details carefully before proceeding.
+                          </div>
+                          
+                          <h5 className="card-title mb-4">Seller Details</h5>
+                          {selectedPayment?.landId ? (
+                            <div className="row">
+                              <div className="col-md-6">
+                                <p><strong>Name:</strong> {selectedPayment.landId.name}</p>
+                                <p><strong>Email:</strong> {selectedPayment.landId.email}</p>
+                                <p><strong>Phone:</strong> {selectedPayment.landId.phoneNumber}</p>
+                                <p><strong>Government ID:</strong> {selectedPayment.landId.governmentId}</p>
+                              </div>
+                              <div className="col-md-6">
+                                <div className="mb-3">
+                                  <label className="form-label"><strong>Seller's Wallet Address:</strong></label>
+                                  <div className="d-flex align-items-center">
+                                    <input
+                                      type="text"
+                                      className="form-control form-control-sm bg-light"
+                                      value={selectedPayment.landId.walletAddress || "No wallet address available"}
+                                      readOnly
+                                    />
+                                    {selectedPayment.landId.walletAddress && (
+                                      <span className="badge bg-info ms-2">Verified</span>
+                                    )}
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          ) : (
+                            <div className="alert alert-warning">Seller details not available</div>
+                          )}
+                        </div>
+                      </div>
                     ) : (
-                      <>
-                        <FaEthereum className="eth-icon me-2" />
-                        Pay {convertInrToEth(selectedPayment.landId.price)} ETH
-                      </>
+                      <div className="card border-info">
+                        <div className="card-body">
+                          <div className="alert alert-info mb-4">
+                            <strong>ℹ️ Note:</strong> Payment will be held in escrow by the land inspector 
+                            until the property transfer is complete.
+                          </div>
+                          <div className="mb-3">
+                            <label className="form-label"><strong>Land Inspector's Wallet Address:</strong></label>
+                            <input
+                              type="text"
+                              className="form-control bg-light"
+                              value="0x37622b2e2714ee440a7672e7d83802196530b2bc"
+                              readOnly
+                            />
+                            <small className="text-muted">
+                              Official wallet address of the registered land inspector
+                            </small>
+                          </div>
+                        </div>
+                      </div>
                     )}
-                  </button>
+                  </div>
+                )}
+
+                {/* Payment Button */}
+                <div className="mt-4 text-center">
+                  {!paymentOption ? (
+                    <div className="alert alert-info">
+                      Please select a payment method to proceed
+                    </div>
+                  ) : (
+                    <button
+                      className={`btn btn-primary btn-lg ${isProcessing ? 'payment-status' : ''} ${walletConnected ? 'glow-effect' : ''}`}
+                      onClick={handlePayment}
+                      disabled={isProcessing || !walletConnected}
+                    >
+                      {isProcessing ? (
+                        <>
+                          <FaSpinner className="spinner me-2" />
+                          <span className="processing-text">Processing Payment...</span>
+                        </>
+                      ) : (
+                        <>
+                          <FaEthereum className="eth-icon me-2" />
+                          Pay {convertInrToEth(selectedPayment.landId.price)} ETH to {paymentOption === 'direct' ? 'Seller' : 'Land Inspector'}
+                        </>
+                      )}
+                    </button>
+                  )}
                   {!walletConnected && (
                     <div className="text-danger mt-2 animate__animated animate__headShake">
                       Please connect your wallet to proceed with payment

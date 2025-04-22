@@ -1,9 +1,16 @@
 .verification-photo-container {
   position: relative;
-  border-radius: 8px;
+  border-radius: 12px;
   overflow: hidden;
-  background-color: #f8f9fa;
+  background: linear-gradient(145deg, #f8f9fa 0%, #e9ecef 100%);
   aspect-ratio: 4/3;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.verification-photo-container:hover {
+  transform: translateY(-4px) scale(1.02);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
 }
 
 .verification-photo {
@@ -11,11 +18,12 @@
   height: 100%;
   object-fit: cover;
   cursor: pointer;
-  transition: transform 0.3s ease;
+  transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .verification-photo:hover {
-  transform: scale(1.05);
+  transform: scale(1.08);
 }
 
 .no-photo {
@@ -25,12 +33,24 @@
   justify-content: center;
   height: 100%;
   color: #6c757d;
-  background-color: #e9ecef;
+  background: linear-gradient(135deg, #e9ecef 0%, #dee2e6 100%);
+  transition: all 0.3s ease;
+}
+
+.no-photo:hover {
+  background: linear-gradient(135deg, #dee2e6 0%, #e9ecef 100%);
 }
 
 .no-photo svg {
-  font-size: 2rem;
+  font-size: 2.5rem;
   margin-bottom: 0.5rem;
+  opacity: 0.7;
+  transition: all 0.3s ease;
+}
+
+.no-photo:hover svg {
+  opacity: 1;
+  transform: scale(1.1);
 }
 
 .photo-modal {
@@ -39,12 +59,14 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.9);
+  background-color: rgba(0, 0, 0, 0.95);
   display: flex;
   justify-content: center;
   align-items: center;
   z-index: 1050;
   cursor: pointer;
+  opacity: 0;
+  animation: modalFadeIn 0.3s ease forwards;
 }
 
 .photo-modal .modal-content {
@@ -52,12 +74,165 @@
   max-height: 90vh;
   background: none;
   border: none;
+  transform: scale(0.9);
+  opacity: 0;
+  animation: modalContentZoom 0.3s ease 0.1s forwards;
 }
 
 .photo-modal img {
   max-width: 100%;
   max-height: 90vh;
   object-fit: contain;
+  border-radius: 12px;
+  box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
+}
+
+.list-group-item {
+  transition: all 0.3s ease;
+  border: none;
+  background: linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%);
+  overflow: hidden;
+}
+
+.list-group-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+}
+
+.transfer-header {
+  position: relative;
+  background: linear-gradient(45deg, #6366f1 0%, #4f46e5 100%);
+  color: white;
+  padding: 1.5rem;
   border-radius: 8px;
-  box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+  margin-bottom: 2rem;
+  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.2);
+}
+
+.expand-enter {
+  max-height: 0;
+  opacity: 0;
+  transform: translateY(-20px);
+}
+
+.expand-enter-active {
+  max-height: 1000px;
+  opacity: 1;
+  transform: translateY(0);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.expand-exit {
+  max-height: 1000px;
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.expand-exit-active {
+  max-height: 0;
+  opacity: 0;
+  transform: translateY(-20px);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.transfer-arrow {
+  color: #4f46e5;
+  margin: 0 0.5rem;
+  animation: arrowPulse 2s infinite;
+}
+
+@keyframes modalFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes modalContentZoom {
+  from {
+    transform: scale(0.9);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes arrowPulse {
+  0% {
+    transform: scale(1);
+    opacity: 0.7;
+  }
+  50% {
+    transform: scale(1.2);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 0.7;
+  }
+}
+
+.badge {
+  transition: all 0.3s ease;
+}
+
+.badge:hover {
+  transform: scale(1.1);
+}
+
+.btn-outline-primary {
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-outline-primary:hover {
+  transform: translateY(-2px);
+  background-color: #f8f9fa;
+  color: #0d6efd;
+}
+
+.btn-outline-primary::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  background: rgba(99, 102, 241, 0.2);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  transition: width 0.6s ease, height 0.6s ease;
+}
+
+.btn-outline-primary:hover::after {
+  width: 300%;
+  height: 300%;
+}
+
+.card {
+  border: none;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.card-header {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.text-break {
+  word-break: break-all;
+}
+
+.btn-primary {
+  background-color: #0d6efd;
+  border-color: #0d6efd;
+}
+
+.btn-primary:hover {
+  background-color: #0b5ed7;
+  border-color: #0a58ca;
 }

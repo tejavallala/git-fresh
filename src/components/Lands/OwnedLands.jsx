@@ -4,30 +4,23 @@ import { FaCheckCircle, FaMapMarkerAlt, FaFileAlt } from 'react-icons/fa';
 import '../CSS/OwnedLands.css';
 
 const OwnedLands = () => {
-  const userId = sessionStorage.getItem('userId'); // Get userId from session storage
+  const userId = sessionStorage.getItem('userId');
   const [lands, setLands] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [showSellModal, setShowSellModal] = useState(false);
+  const [selectedLand, setSelectedLand] = useState(null);
+  const [uploadFile, setUploadFile] = useState(null);
+  const [verificationStatus, setVerificationStatus] = useState(null);
+  const [isVerifying, setIsVerifying] = useState(false);
 
   useEffect(() => {
-    if (userId) {
-      fetchOwnedLands();
-    }
+    if (userId) fetchOwnedLands();
   }, [userId]);
 
   const fetchOwnedLands = async () => {
     try {
-      const response = await axios.get(`https://git-back-k93u.onrender.com/landRoute/owned-lands/${userId}`);
-      
-      // Enhanced debug logging
-      console.log('Owned lands response:', JSON.stringify(response.data, null, 2));
-      if (response.data.length > 0) {
-        console.log('First land previous owner:', {
-          previousOwner: response.data[0]?.previousOwner,
-          userId: response.data[0]?.userId
-        });
-      }
-      
+      const response = await axios.get(`http://localhost:4000/landRoute/owned-lands/${userId}`);
       setLands(response.data);
       setIsLoading(false);
     } catch (error) {
@@ -37,17 +30,87 @@ const OwnedLands = () => {
     }
   };
 
-  // Add this helper function at the top of your component
   const getPreviousOwnerDetails = (land) => {
-    // Try to get details from previousOwner first, fall back to userId
     const owner = land.previousOwner || land.userId;
     return {
       name: owner?.name || 'Not available',
       email: owner?.email || 'Not available',
-      phone: owner?.phoneNumber || 'Not available'
+      phone: owner?.phoneNumber || 'Not available',
     };
   };
 
+  const parseEssentialContent = (text) => {
+    const getBetween = (text, startLabel, endLabel) => {
+      const regex = new RegExp(`${startLabel}:\\s*(.*?)\\s*${endLabel}:`, 'is');
+      const match = text.match(regex);
+      return match ? match[1].trim() : '';
+    };
+  
+    const getAfter = (text, label) => {
+      const regex = new RegExp(`${label}:\\s*(.*)`, 'is');
+      const match = text.match(regex);
+      return match ? match[1].trim() : '';
+    };
+  
+    return {
+      surveyNumber: getBetween(text, 'Survey Number', 'Location').toLowerCase(),
+      location: getBetween(text, 'Location', 'Area').toLowerCase(),
+      area: getBetween(text, 'Area', 'Seller').toLowerCase().replace(/sq\s*ft|sqft/gi, '').replace(/\s+/g, ''),
+      sellerId: getBetween(text, 'Seller', 'Buyer').trim(),
+      buyerId: getBetween(text, 'Buyer', 'Transaction Hash').trim(),
+      transactionHash: getAfter(text, 'Transaction Hash').trim()
+    };
+  };
+  
+
+  const verifyTransferDocument = async () => {
+    if (!uploadFile || !selectedLand) {
+      alert('Please select a file and land');
+      return;
+    }
+  
+    try {
+      setIsVerifying(true);
+      setVerificationStatus(null);
+  
+      // Read the uploaded PDF file
+      const arrayBuffer = await uploadFile.arrayBuffer();
+  
+      // Use pdf-lib to extract metadata
+      const { PDFDocument } = await import('pdf-lib');
+      const pdfDoc = await PDFDocument.load(arrayBuffer);
+  
+      // Extract the hash from the metadata
+      const metadata = pdfDoc.getKeywords();
+      const match = metadata?.match(/hash:([a-f0-9]{64})/);
+  
+      if (!match) {
+        alert("❌ Document hash not found in PDF metadata. Please upload the original file.");
+        return;
+      }
+  
+      const extractedHash = match[1];
+      const storedHash = selectedLand.transferDocumentHash;
+  
+      console.log("📥 PDF Upload - Extracted Hash:", extractedHash);
+      console.log("📦 Stored Hash:", storedHash);
+  
+      if (extractedHash === storedHash) {
+        setVerificationStatus('original');
+        alert('✅ Document verified! Land listed for sale.');
+        // (Optional) Proceed to list land for sale
+      } else {
+        setVerificationStatus('modified');
+        alert('❌ Fake document! Hash mismatch.');
+      }
+    } catch (error) {
+      console.error("❌ Verification Error:", error);
+      alert("Error verifying the PDF.");
+    } finally {
+      setIsVerifying(false);
+    }
+  };
+  
   if (isLoading) {
     return (
       <div className="d-flex justify-content-center align-items-center vh-100">
@@ -61,9 +124,7 @@ const OwnedLands = () => {
   if (error) {
     return (
       <div className="container mt-5">
-        <div className="alert alert-danger" role="alert">
-          {error}
-        </div>
+        <div className="alert alert-danger">{error}</div>
       </div>
     );
   }
@@ -72,9 +133,7 @@ const OwnedLands = () => {
     <div className="container mt-5">
       <h2 className="mb-4">Your Owned Lands</h2>
       {lands.length === 0 ? (
-        <div className="alert alert-info">
-          You don't own any lands yet.
-        </div>
+        <div className="alert alert-info">You don't own any lands yet.</div>
       ) : (
         <div className="row g-4">
           {lands.map((land) => (
@@ -101,31 +160,14 @@ const OwnedLands = () => {
                   </div>
 
                   <div className="mb-3">
-                    <p className="mb-1"><strong>Survey Number:</strong> {land.surveyNumber}</p>
-                    <p className="mb-1"><strong>Area:</strong> {land.area} sq ft</p>
-                    
-                    {/* Previous Owner Details Section */}
+                    <p><strong>Survey Number:</strong> {land.surveyNumber}</p>
+                    <p><strong>Area:</strong> {land.area} sq ft</p>
+
                     <div className="border-start ps-2 my-3">
                       <h6 className="text-muted mb-2">Previous Owner Details</h6>
-                      {land.userId ? (
-                        <>
-                          <div className="previous-owner-details">
-                            <p className="mb-1">
-                              <strong>Name:</strong> {getPreviousOwnerDetails(land).name}
-                            </p>
-                            <p className="mb-1">
-                              <strong>Email:</strong> {getPreviousOwnerDetails(land).email}
-                            </p>
-                            <p className="mb-1">
-                              <strong>Phone:</strong> {getPreviousOwnerDetails(land).phone}
-                            </p>
-                          </div>
-                        </>
-                      ) : (
-                        <div className="alert alert-warning p-2 mb-0">
-                          <small>Previous owner details not available</small>
-                        </div>
-                      )}
+                      <p><strong>Name:</strong> {getPreviousOwnerDetails(land).name}</p>
+                      <p><strong>Email:</strong> {getPreviousOwnerDetails(land).email}</p>
+                      <p><strong>Phone:</strong> {getPreviousOwnerDetails(land).phone}</p>
                     </div>
                   </div>
 
@@ -133,25 +175,77 @@ const OwnedLands = () => {
                     <small>
                       <FaFileAlt className="me-2" />
                       <strong>Transfer Date:</strong>{' '}
-                      {land.lastTransactionDate 
+                      {land.lastTransactionDate
                         ? new Date(land.lastTransactionDate).toLocaleString('en-IN')
-                        : 'Not available'
-                      }
+                        : 'Not available'}
                     </small>
                   </div>
 
                   {land.lastTransactionHash && (
-                    <button 
+                    <button
                       className="btn btn-outline-primary btn-sm w-100"
-                      onClick={() => window.open(`https://sepolia.etherscan.io/tx/${land.lastTransactionHash}`, '_blank')}
+                      onClick={() =>
+                        window.open(`https://sepolia.etherscan.io/tx/${land.lastTransactionHash}`, '_blank')
+                      }
                     >
                       View Transaction Details
+                    </button>
+                  )}
+
+                  {land.transferDocumentHash && (
+                    <button
+                      className="btn btn-primary btn-sm mt-2 w-100"
+                      onClick={() => {
+                        setSelectedLand(land);
+                        setShowSellModal(true);
+                        setVerificationStatus(null);
+                        setUploadFile(null);
+                      }}
+                    >
+                      List for Sale
                     </button>
                   )}
                 </div>
               </div>
             </div>
           ))}
+        </div>
+      )}
+
+      {/* Modal for Upload & Verification */}
+      {showSellModal && (
+        <div className="modal show d-block" tabIndex="-1" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>
+          <div className="modal-dialog modal-md">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h5 className="modal-title">Upload Transfer Certificate</h5>
+                <button type="button" className="btn-close" onClick={() => setShowSellModal(false)}></button>
+              </div>
+              <div className="modal-body">
+                <p>Please upload the original transfer certificate PDF.</p>
+                <input
+                  type="file"
+                  accept=".pdf"
+                  className="form-control"
+                  onChange={(e) => setUploadFile(e.target.files[0])}
+                />
+                {verificationStatus === 'original' && (
+                  <div className="alert alert-success mt-3">✅ Document is original and verified.</div>
+                )}
+                {verificationStatus === 'modified' && (
+                  <div className="alert alert-danger mt-3">❌ Document is modified or fake.</div>
+                )}
+              </div>
+              <div className="modal-footer">
+                <button className="btn btn-secondary" onClick={() => setShowSellModal(false)}>
+                  Cancel
+                </button>
+                <button className="btn btn-primary" disabled={!uploadFile || isVerifying} onClick={verifyTransferDocument}>
+                  {isVerifying ? 'Verifying...' : 'Verify & List'}
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
       )}
     </div>

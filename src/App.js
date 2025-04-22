@@ -20,6 +20,7 @@ import BuyerTransaction from "./components/Transactions/BuyerTransactionHistory"
 import TransferRequests from "./components/LandInspector/TransferRequests";
 import OwnedLands from "./components/Lands/OwnedLands";
 import TransferHistory from './components/LandInspector/TransferHistory';
+import EscrowPayments from './components/Payment/EscrowPayments';
 
 const App = () => {
   return (
@@ -27,6 +28,8 @@ const App = () => {
       <div className="App">
         <Routes>
           <Route path="/" element={<Dashboard />} />
+          <Route path="/escrow-payments" element={<EscrowPayments />} />
+
           <Route
             path="/seller-dashboard/:userId"
             element={<SellerDashboard />}
