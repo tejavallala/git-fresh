@@ -105,8 +105,8 @@ const Dashboard = () => {
 
       const endpoint =
         loginRole === "seller"
-          ? "https://git-back-k93u.onrender.com/sellerRouter/login"
-          : "https://git-back-k93u.onrender.com/buyerRouter/login";
+          ? "http://localhost:4000/sellerRouter/login"
+          : "http://localhost:4000/buyerRouter/login";
 
       const response = await axios.post(endpoint, {
         email: loginData.email,

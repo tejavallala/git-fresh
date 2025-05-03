@@ -147,6 +147,11 @@ function BuyerDashboard() {
                 </Link>
               </li>
               <li className="nav-item">
+                <Link className="nav-link" to={`/nft-lands/${userId}`}>
+                  <FaHome className="me-1" /> NFT Lands
+                </Link>
+              </li>
+              <li className="nav-item">
                 {pendingPayments.length > 0 && (
                   <Link 
                     className="nav-link" 

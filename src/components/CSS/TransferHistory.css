@@ -1,4 +1,4 @@
-.verification-photo-container {
+/* .verification-photo-container {
   position: relative;
   border-radius: 12px;
   overflow: hidden;
@@ -14,8 +14,10 @@
 }
 
 .verification-photo {
-  width: 100%;
-  height: 100%;
+  max-width: 100px;
+  height: auto;
+  border-radius: 8px;
+  border: 2px solid #e9ecef;
   object-fit: cover;
   cursor: pointer;
   transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
@@ -32,6 +34,10 @@
   align-items: center;
   justify-content: center;
   height: 100%;
+  padding: 1rem;
+  background-color: #f8f9fa;
+  border: 1px dashed #dee2e6;
+  text-align: center;
   color: #6c757d;
   background: linear-gradient(135deg, #e9ecef 0%, #dee2e6 100%);
   transition: all 0.3s ease;
@@ -85,6 +91,10 @@
   object-fit: contain;
   border-radius: 12px;
   box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
+}
+
+.modal-backdrop {
+  background-color: rgba(0, 0, 0, 0.5);
 }
 
 .list-group-item {
@@ -217,6 +227,11 @@
 .card {
   border: none;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  transition: transform 0.2s;
+}
+
+.card:hover {
+  transform: translateY(-2px);
 }
 
 .card-header {
@@ -235,4 +250,400 @@
 .btn-primary:hover {
   background-color: #0b5ed7;
   border-color: #0a58ca;
+} */
+
+/* Base styles */
+:root {
+  --primary-color: #0071e3;
+  --secondary-color: #86868b;
+  --success-color: #34c759;
+  --warning-color: #ff9500;
+  --danger-color: #ff3b30;
+  --info-color: #5ac8fa;
+  --light-color: #f5f5f7;
+  --dark-color: #1d1d1f;
+  --card-bg: #ffffff;
+  --border-color: #d2d2d7;
+  --border-radius: 12px;
+  --box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  --transition-speed: 0.3s;
+  --font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+}
+
+body {
+  font-family: var(--font-family);
+  color: var(--dark-color);
+  background-color: #f5f5f7;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.app-container {
+  min-height: 100vh;
+  position: relative;
+}
+
+/* Header styles */
+.app-header {
+  background-color: rgba(255, 255, 255, 0.8);
+  backdrop-filter: saturate(180%) blur(20px);
+  border-bottom: 1px solid var(--border-color);
+  padding: 0.75rem 0;
+}
+
+.app-header .navbar-brand {
+  font-weight: 600;
+  color: var(--dark-color);
+}
+
+.brand-icon {
+  color: var(--primary-color);
+}
+
+.nav-link {
+  color: var(--secondary-color);
+  font-weight: 500;
+  padding: 0.5rem 1rem;
+  transition: color var(--transition-speed);
+}
+
+.nav-link:hover, .nav-link.active {
+  color: var(--primary-color);
+}
+
+/* Main content area */
+.main-content {
+  padding-top: 76px;
+  padding-bottom: 2rem;
+}
+
+/* Page header */
+.page-header {
+  margin-bottom: 2rem;
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 1rem;
+}
+
+.page-header h2 {
+  font-weight: 600;
+  font-size: 1.75rem;
+  margin-bottom: 0.25rem;
+}
+
+/* Transfer card styles */
+.transfer-card {
+  background-color: var(--card-bg);
+  border-radius: var(--border-radius);
+  border: 1px solid var(--border-color);
+  box-shadow: var(--box-shadow);
+  margin-bottom: 1.5rem;
+  overflow: hidden;
+  transition: transform var(--transition-speed), box-shadow var(--transition-speed);
+}
+
+.transfer-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+}
+
+.status-indicator {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  flex-shrink: 0;
+}
+
+.status-indicator.completed {
+  background-color: var(--success-color);
+}
+
+.card-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+}
+
+.land-details {
+  margin-top: 1.5rem;
+}
+
+.land-details h5, .transaction-summary h5 {
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--secondary-color);
+  margin-bottom: 0.75rem;
+}
+
+.location {
+  font-weight: 500;
+  margin-bottom: 0.75rem;
+}
+
+.detail-item {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 0;
+}
+
+.detail-item .label {
+  font-size: 0.75rem;
+  color: var(--secondary-color);
+}
+
+.detail-item .value {
+  font-weight: 500;
+}
+
+.transaction-summary {
+  background-color: var(--light-color);
+  border-radius: var(--border-radius);
+  padding: 1.25rem;
+  height: 100%;
+}
+
+.transaction-amount {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--primary-color);
+  margin-bottom: 0.75rem;
+}
+
+.transaction-hash .value.hash {
+  font-family: monospace;
+  background-color: rgba(0, 0, 0, 0.05);
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.875rem;
+}
+
+.action-btn {
+  display: flex;
+  align-items: center;
+  padding: 0.5rem 1rem;
+  border-radius: var(--border-radius);
+  font-weight: 500;
+  transition: all var(--transition-speed);
+}
+
+/* Expanded details section */
+.transfer-details-container {
+  border-top: 1px solid var(--border-color);
+  margin-top: 1.5rem;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.details-section-header {
+  margin: 1.5rem 0 1rem;
+  font-weight: 600;
+  font-size: 1.125rem;
+}
+
+/* Participant cards */
+.participant-card {
+  height: 100%;
+  border-radius: var(--border-radius);
+  border: 1px solid var(--border-color);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.participant-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.participant-header h5 {
+  margin: 0;
+  font-weight: 600;
+}
+
+.participant-details {
+  margin-bottom: 1rem;
+}
+
+.participant-name {
+  font-weight: 500;
+  font-size: 1.125rem;
+  margin-bottom: 0.5rem;
+}
+
+.participant-contact {
+  color: var(--secondary-color);
+  margin-bottom: 0.5rem;
+}
+
+/* Photo section */
+.photo-section {
+  cursor: pointer;
+  transition: transform var(--transition-speed);
+}
+
+.photo-section:hover {
+  transform: scale(1.02);
+}
+
+.photo-preview {
+  height: 160px;
+  border-radius: 8px;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  background-color: #f0f0f0;
+}
+
+.no-photo {
+  text-align: center;
+  color: var(--secondary-color);
+}
+
+.no-photo svg {
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+}
+
+.photo-caption {
+  font-size: 0.75rem;
+  color: var(--secondary-color);
+  margin-top: 0.5rem;
+  text-align: center;
+}
+
+/* Timeline styles */
+.timeline-card {
+  border-radius: var(--border-radius);
+  border: 1px solid var(--border-color);
+}
+
+.timeline-table {
+  margin-bottom: 0;
+}
+
+.timeline-table td {
+  padding: 1rem;
+  border-color: var(--border-color);
+}
+
+.timeline-date {
+  display: flex;
+  flex-direction: column;
+}
+
+.timeline-date .date {
+  font-weight: 500;
+}
+
+.timeline-date .time {
+  font-size: 0.875rem;
+  color: var(--secondary-color);
+}
+
+.timeline-event {
+  display: flex;
+  align-items: center;
+}
+
+/* Photo viewer modal */
+.photo-viewer-modal {
+  max-width: 800px;
+}
+
+.photo-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 500px;
+  overflow: hidden;
+  background-color: #000;
+}
+
+.photo-container img {
+  max-height: 100%;
+  max-width: 100%;
+  object-fit: contain;
+  transition: transform 0.3s ease;
+}
+
+.zoom-controls {
+  display: flex;
+  align-items: center;
+  margin-right: auto;
+}
+
+.zoom-level {
+  margin: 0 0.75rem;
+  min-width: 3rem;
+  text-align: center;
+}
+
+.close-btn {
+  color: var(--dark-color);
+  font-size: 1.25rem;
+}
+
+/* Loading spinner */
+.custom-spinner-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 200px;
+}
+
+/* Empty state */
+.empty-state {
+  text-align: center;
+  padding: 3rem 0;
+  background-color: var(--card-bg);
+  border-radius: var(--border-radius);
+  border: 1px dashed var(--border-color);
+}
+
+.empty-state-icon {
+  font-size: 3rem;
+  color: var(--secondary-color);
+  margin-bottom: 1rem;
+}
+
+.empty-state h3 {
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.empty-state p {
+  color: var(--secondary-color);
+}
+
+/* Responsive adjustments */
+@media (max-width: 767.98px) {
+  .transaction-summary {
+    margin-top: 1.5rem;
+  }
+  
+  .timeline-table {
+    font-size: 0.875rem;
+  }
+  
+  .timeline-date, .timeline-event {
+    font-size: 0.875rem;
+  }
+  
+  .photo-container {
+    height: 300px;
+  }
 }
