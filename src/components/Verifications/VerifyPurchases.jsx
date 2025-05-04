@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { FaCheck, FaTimes} from 'react-icons/fa';
+import { Container, Spinner } from 'react-bootstrap';
 
 function VerifyPurchases() {
   const [requests, setRequests] = useState([]);
@@ -23,6 +24,18 @@ function VerifyPurchases() {
       setIsLoading(false);
     }
   };
+  if (isLoading) {
+    return (
+      <Container className="py-5 text-center">
+        <div className="custom-spinner-container">
+          <Spinner animation="border" variant="primary" role="status">
+            <span className="visually-hidden">Loading...</span>
+          </Spinner>
+          <p className="mt-3">Loading verify Purchases Page ...</p>
+        </div>
+      </Container>
+    );
+  }
 
   const handleVerification = async (requestId, status) => {
     try {

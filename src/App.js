@@ -22,6 +22,7 @@ import OwnedLands from "./components/Lands/OwnedLands";
 import TransferHistory from './components/LandInspector/TransferHistory';
 import EscrowPayments from './components/Payment/EscrowPayments';
 import BuyerNFTLands from "./components/NFT/BuyerNFT";
+import LandHistory from "./components/Lands/LandHistory";
 
 const App = () => {
   return (
@@ -75,6 +76,7 @@ const App = () => {
             }
           />
           <Route path="/land-payment/:requestId" element={<LandPayment />} />
+          <Route path="/history"element={<LandHistory/>} />
           <Route path="transaction-history" element={<BuyerTransaction />} />
           <Route path="/transfer-ownership/" element={<TransferRequests/>} />
           <Route path="/owned-lands/:userId" element={<OwnedLands/>} />

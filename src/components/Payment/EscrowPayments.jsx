@@ -2,13 +2,13 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { ethers } from 'ethers';
 import '../CSS/EscrowPayments.css';
+import { Container, Spinner } from 'react-bootstrap';
 import { FaEthereum, FaSpinner, FaCheckCircle, FaExclamationTriangle } from 'react-icons/fa';
 
 const EscrowPayments = () => {
   const [escrowPayments, setEscrowPayments] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isProcessing, setIsProcessing] = useState(false);
-  const [selectedPayment, setSelectedPayment] = useState(null);
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [showVerificationModal, setShowVerificationModal] = useState(false);
   const [verificationConfirmed, setVerificationConfirmed] = useState(false);
@@ -221,13 +221,17 @@ const EscrowPayments = () => {
   };
 
   if (isLoading) {
-    return (
-      <div className="text-center mt-5">
-        <FaSpinner className="spinner" />
-        <p>Loading escrow payments...</p>
-      </div>
-    );
-  }
+        return (
+          <Container className="py-5 text-center">
+            <div className="custom-spinner-container">
+              <Spinner animation="border" variant="primary" role="status">
+                <span className="visually-hidden">Loading...</span>
+              </Spinner>
+              <p className="mt-3">Loading Escrow Payment Page ...</p>
+            </div>
+          </Container>
+        );
+      }
 
   return (
     <div className="container mt-4">

@@ -1,19 +1,17 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { FaClock, FaCheck, FaTimes } from "react-icons/fa";
+import { FaCheck, FaTimes } from "react-icons/fa";
+import 'bootstrap/dist/css/bootstrap.min.css';
+import { Container, Spinner } from 'react-bootstrap';
 
 function VerifyLand() {
   const [lands, setLands] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  useEffect(() => {
-    fetchPendingLands();
-  }, []);
-
   const fetchPendingLands = async () => {
     try {
-      const response = await axios.get("https://git-back-k93u.onrender.com/landRoute/pending-lands");
+      const response = await axios.get("http://localhost:4000/landRoute/pending-lands");
       setLands(response.data);
       setIsLoading(false);
     } catch (error) {
@@ -23,9 +21,26 @@ function VerifyLand() {
     }
   };
 
+  useEffect(() => {
+    fetchPendingLands();
+  }, []);
+
+  if (isLoading) {
+    return (
+      <Container className="py-5 text-center">
+        <div className="custom-spinner-container">
+          <Spinner animation="border" variant="primary" role="status">
+            <span className="visually-hidden">Loading...</span>
+          </Spinner>
+          <p className="mt-3">Loading verify Land page...</p>
+        </div>
+      </Container>
+    );
+  }
+
   const handleVerification = async (landId, status, comments) => {
     try {
-      await axios.post(`https://git-back-k93u.onrender.com/landRoute/verify-land/${landId}`, {
+      await axios.post(`http://localhost:4000/landRoute/verify-land/${landId}`, {
         status,
         comments,
         inspectorId: sessionStorage.getItem("userId")
@@ -36,9 +51,6 @@ function VerifyLand() {
       alert("Failed to verify land");
     }
   };
-
-  if (isLoading) return <div className="text-center mt-5"><div className="spinner-border" /></div>;
-  if (error) return <div className="alert alert-danger m-3">{error}</div>;
 
   return (
     <div className="container mt-4">

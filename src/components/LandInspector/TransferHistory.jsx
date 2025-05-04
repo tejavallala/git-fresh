@@ -5,7 +5,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import '../CSS/TransferHistory.css';
 import { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Navbar, Container, Nav, Card, Row, Col, Button, Modal, Badge, Table, Spinner, Alert } from 'react-bootstrap';
+import { Navbar, Container, Card, Row, Col, Button, Modal, Badge, Table, Spinner, Alert } from 'react-bootstrap';
 import { HardDriveIcon } from 'lucide-react';
 import { FaCheckCircle, FaMapMarkerAlt, FaCalendarAlt, FaUser, FaPhone, FaEnvelope, FaCamera, FaTimes, FaSearchPlus, FaSearchMinus, FaDownload, FaChevronDown, FaChevronUp } from 'react-icons/fa';
 import jsPDF from 'jspdf';
@@ -22,12 +22,7 @@ const Header = () => {
         </Navbar.Brand>
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
-          <Nav className="ms-auto">
-            <Nav.Link href="#dashboard" className="nav-link">Dashboard</Nav.Link>
-            <Nav.Link href="#properties" className="nav-link">Properties</Nav.Link>
-            <Nav.Link href="#transfers" className="nav-link active">Transfers</Nav.Link>
-            <Nav.Link href="#account" className="nav-link">Account</Nav.Link>
-          </Nav>
+          
         </Navbar.Collapse>
       </Container>
     </Navbar>

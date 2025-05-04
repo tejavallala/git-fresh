@@ -9,7 +9,7 @@ import {
   FaCheckCircle,
   FaLock,
   FaCreditCard, // Add this import
-  FaHome, // Add this new import
+  FaHome,FaCoins // Add this new import
 } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -148,7 +148,7 @@ function BuyerDashboard() {
               </li>
               <li className="nav-item">
                 <Link className="nav-link" to={`/nft-lands/${userId}`}>
-                  <FaHome className="me-1" /> NFT Lands
+                  <FaCoins className="me-1" /> Generate NFT
                 </Link>
               </li>
               <li className="nav-item">

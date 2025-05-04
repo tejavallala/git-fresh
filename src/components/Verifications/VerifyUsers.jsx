@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
+import { Container, Spinner } from 'react-bootstrap';
 
 const VerifyUser = () => {
   const [users, setUsers] = useState([]);
@@ -15,6 +16,7 @@ const VerifyUser = () => {
   useEffect(() => {
     fetchAllUsers();
   }, [activeTab]);
+  
 
   const fetchAllUsers = async () => {
     try {
@@ -50,6 +52,18 @@ const VerifyUser = () => {
       setLoading(false);
     }
   };
+  if (loading) {
+      return (
+        <Container className="py-5 text-center">
+          <div className="custom-spinner-container">
+            <Spinner animation="border" variant="primary" role="status">
+              <span className="visually-hidden">Loading...</span>
+            </Spinner>
+            <p className="mt-3">Loading verify Users Page ...</p>
+          </div>
+        </Container>
+      );
+    }
 
   const maskDocumentNumber = (number) => {
     if (!number) return '';
@@ -269,14 +283,7 @@ const VerifyUser = () => {
         {showModal && <div className="modal-backdrop fade show" onClick={() => setShowModal(false)}></div>}
       </div>
 
-      {/* Loading State */}
-      {loading && (
-        <div className="position-fixed top-0 start-0 w-100 h-100 d-flex justify-content-center align-items-center bg-white bg-opacity-75" style={{ zIndex: 1055 }}>
-          <div className="spinner-border text-primary" role="status">
-            <span className="visually-hidden">Loading...</span>
-          </div>
-        </div>
-      )}
+      
     </div>
   );
 };
